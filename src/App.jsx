@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Register from './pages/Register'
-import Login from './pages/Login'
-import { ToastContainer } from 'react-toastify'
+import { Routes, Route, Navigate } from "react-router-dom";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-
-
   return (
     <>
-    <Register/>
-    <Login/>
+      <Routes>
+        <Route path="/" element={<Navigate to="/register" />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
 
-    <Router/>
-    <ToastContainer
-    position="top-right"
-    autoClose={100}
-    hideProgressBar={false}
-    newestOnTop={false}
-    closeOnClick={false}
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-    theme="light"
-    />
-      
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
