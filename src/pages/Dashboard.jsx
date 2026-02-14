@@ -3,9 +3,11 @@ import Navbar from "../Component/Navbar";
 import { FaPlus } from "react-icons/fa";
 import { MdDelete, MdEdit } from "react-icons/md";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -16,9 +18,7 @@ function Dashboard() {
       console.log(error);
     }
   };
-  useEffect(() => {
-    console.log("called after API", posts);
-  }, [posts]);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -26,7 +26,6 @@ function Dashboard() {
   return (
     <div className="dashboard-page">
       <Navbar />
-
       <main className="dashbord-main">
         <div className="dashboard-welcome">
           <div className="welcome-text">
@@ -57,7 +56,10 @@ function Dashboard() {
         <section className="posts-section">
           <div className="section-header">
             <h2 className="section-title">Recent Feed</h2>
-            <button className="create-shortcut-btn">
+            <button
+              className="create-shortcut-btn"
+              onClick={() => navigate("/create-post")}
+            >
               <FaPlus /> New Post
             </button>
           </div>
@@ -67,15 +69,20 @@ function Dashboard() {
               <div className="post-card" key={post.id}>
                 <div className="post-image-container">
                   <img
-                    src={post.image}
+                    src={post.imageUrl}
                     alt={post.title}
                     className="post-card-image"
                   />
 
                   <div className="post-actions">
-                    <button className="action-btn edit-btn" title="Edit Post">
-                      <MdEdit size={22} color="white" />
-                    </button>
+                   <button
+  className="action-btn edit-btn"
+  title="Edit Post"
+  onClick={() => navigate(`/edit-post/${post.id}`)}
+>
+  <MdEdit size={22} color="white" />
+</button>
+
                     <button
                       className="action-btn delete-btn"
                       title="Delete Post"
@@ -87,7 +94,9 @@ function Dashboard() {
 
                 <div className="post-card-content">
                   <div className="post-meta">
-                    <span className="post-author">By {post.author}</span>
+                    <span className="post-author">
+                      By {post.auther}
+                    </span>
                     <span className="post-date">
                       {new Date(post.createdAt).toDateString()}
                     </span>
@@ -95,7 +104,9 @@ function Dashboard() {
 
                   <h3 className="post-card-title">{post.title}</h3>
 
-                  <p className="post-card-description">{post.description}</p>
+                  <p className="post-card-description">
+                    {post.description}
+                  </p>
 
                   <button className="read-more-btn">Read More</button>
                 </div>

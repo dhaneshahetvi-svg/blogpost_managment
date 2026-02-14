@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Createpost from "./pages/Createpost";
 
 function App() {
   return (
@@ -14,8 +15,12 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+        <Route path="/create-post" element={<Createpost />} />
+        <Route path="/edit-post/:" element={<Createpost/>}/>
 
+
+
+      </Routes>
       <ToastContainer
         position="top-right"
         autoClose={1000}
