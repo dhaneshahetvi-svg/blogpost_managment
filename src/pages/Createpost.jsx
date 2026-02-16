@@ -1,113 +1,94 @@
-import React, { useRef, useState } from "react";
-import {
-  FaCloudUploadAlt,
-  FaHeading,
-  FaRegPaperPlane,
-  FaTimes,
-  FaUser,
-} from "react-icons/fa";
-  import "./CreatePost.css";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Component/Navbar";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import "./Createpost.css";
 
-function CreatePost() {
-  const autherName = JSON.parse(localStorage.getItem("blog_rdata"));
+const Createpost = () => {
+  const navigate = useNavigate();
+  const { id } = useParams(); // get post id for edit mode
 
-  const [data, setData] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
-    auther: autherName?.name || "",
+    author: "",
     imageUrl: "",
-    imageType: "url",
   });
 
-  const fileInputRef = useRef(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
 
+  /* =========================
+     FETCH POST (EDIT MODE)
+  ========================== */
+  useEffect(() => {
+    if (id) {
+      fetch(`http://localhost:3000/posts/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setFormData({
+            title: data.title || "",
+            description: data.description || "",
+            author: data.author || "",
+            imageUrl: data.imageUrl || "",
+          });
+        })
+        .catch(() => {
+          toast.error("Failed to load post");
+        });
+    }
+  }, [id]);
+
+  /* =========================
+     HANDLE INPUT CHANGE
+  ========================== */
   const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-    setError({ ...error, [e.target.name]: "" });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  //  FILE UPLOAD
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result);
-      setData((prev) => ({ ...prev, imageUrl: reader.result }));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // URL INPUT
-  const handleImageUrlChange = (e) => {
-    const url = e.target.value;
-    setData((prev) => ({ ...prev, imageUrl: url }));
-    setImagePreview(url);
-  };
-
-  const triggerFileSelect = () => {
-    fileInputRef.current.click();
-  };
-
-  const removeImage = () => {
-    setImagePreview(null);
-    setData((prev) => ({ ...prev, imageUrl: "" }));
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const handleFileTypeChange = (type) => {
-    setData((prev) => ({ ...prev, imageType: type }));
-    setImagePreview(null);
-  };
-
-  const validate = () => {
-    const newError = {};
-    if (!data.title.trim()) newError.title = "Title is required.";
-    if (!data.auther.trim()) newError.auther = "Author is required.";
-    if (!data.description.trim())
-      newError.description = "Description is required.";
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
-
+  /* =========================
+     SUBMIT HANDLER
+  ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
 
-    const postData = {
-      title: data.title,
-      description: data.description,
-      auther: data.auther,
-      imageUrl: data.imageUrl,
-      createdAt: new Date().toISOString(),
-    };
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.author ||
+      !formData.imageUrl
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postData),
-      });
+      const response = await fetch(
+        id
+          ? `http://localhost:3000/posts/${id}` // EDIT
+          : "http://localhost:3000/posts", // CREATE
+        {
+          method: id ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            createdAt: id ? undefined : new Date(),
+          }),
+        }
+      );
 
-      if (!res.ok) throw new Error("Failed to save post");
+      if (!response.ok) throw new Error("Failed");
 
-      alert("Post saved successfully!");
-
-      setData({
-        title: "",
-        description: "",
-        auther: autherName?.name || "",
-        imageUrl: "",
-        imageType: "url",
-      });
-      setImagePreview(null);
-    } catch (err) {
-      console.error(err);
-      alert("Error saving post");
+      toast.success(id ? "Post Updated Successfully" : "Post Created Successfully");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,151 +97,65 @@ function CreatePost() {
       <Navbar />
 
       <div className="create-post-container">
-        <header className="form-header">
-          <h1>Create New Post</h1>
-          <p>Share Your Thoughts and Stories With The World.</p>
-        </header>
+        <h1>{id ? "Edit Post" : "Create New Post"}</h1>
 
-        <div className="post-form-card">
-          <form onSubmit={handleSubmit}>
-            {/* TITLE */}
-            <div className="form-group">
-              <label>Post Title</label>
-              <div className="input-wrapper">
-                <FaHeading className="input-icon" />
-                <input
-                  type="text"
-                  name="title"
-                  value={data.title}
-                  className="form-control"
-                  onChange={handleChange}
-                  placeholder="Enter your catchy title..."
-                />
-                {error.title && <span className="error">{error.title}</span>}
-              </div>
-            </div>
+        <form className="create-post-form" onSubmit={handleSubmit}>
+          {/* Title */}
+          <div className="form-group">
+            <label>Post Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter post title"
+            />
+          </div>
 
-            {/* AUTHOR */}
-            <div className="form-group">
-              <label>Author Name</label>
-              <div className="input-wrapper">
-                <FaUser className="input-icon" />
-                <input
-                  type="text"
-                  name="auther"
-                  value={data.auther}
-                  className="form-control"
-                  onChange={handleChange}
-                  placeholder="Your Name"
-                />
-                {error.auther && <span className="error">{error.auther}</span>}
-              </div>
-            </div>
+          {/* Author */}
+          <div className="form-group">
+            <label>Author Name</label>
+            <input
+              type="text"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              placeholder="Enter author name"
+            />
+          </div>
 
-            {/* DESCRIPTION */}
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                name="description"
-                className="form-control"
-                value={data.description}
-                onChange={handleChange}
-                placeholder="What's in your mind?"
-              />
-              {error.description && (
-                <span className="error">{error.description}</span>
-              )}
-            </div>
+          {/* Image URL */}
+          <div className="form-group">
+            <label>Image URL</label>
+            <input
+              type="text"
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              placeholder="Paste image URL"
+            />
+          </div>
 
-            {/* IMAGE */}
-            <div className="form-group">
-              <label>Cover Image</label>
+          {/* Description */}
+          <div className="form-group">
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Write post description"
+              rows="5"
+            />
+          </div>
 
-              {!imagePreview ? (
-                <>
-                  <div className="image-source-tabs">
-                    <button
-                      type="button"
-                      className={`tab-btn ${
-                        data.imageType === "url" ? "active" : ""
-                      }`}
-                      onClick={() => handleFileTypeChange("url")}
-                    >
-                      Image URL
-                    </button>
-                    <button
-                      type="button"
-                      className={`tab-btn ${
-                        data.imageType === "file" ? "active" : ""
-                      }`}
-                      onClick={() => handleFileTypeChange("file")}
-                    >
-                      Upload File
-                    </button>
-                  </div>
-
-                  {data.imageType === "url" ? (
-                    <input
-                      type="url"
-                      className="form-control"
-                      placeholder="Paste image URL"
-                      value={data.imageUrl}
-                      onChange={handleImageUrlChange}
-                    />
-                  ) : (
-                    <div
-                      className="image-upload-area"
-                      onClick={triggerFileSelect}
-                    >
-                      <FaCloudUploadAlt className="upload-icon" />
-                      <p>Click to upload image</p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        hidden
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="image-preview-container">
-                  <img
-                    src={imagePreview}
-                    alt="preview"
-                    className="image-preview"
-                  />
-                  <button
-                    type="button"
-                    className="remove-image-btn"
-                    onClick={removeImage}
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* BUTTONS */}
-            <div className="form-actions-row">
-              <button type="submit" className="submit-btn">
-                <FaRegPaperPlane /> Publish Post
-              </button>
-
-              <button
-                type="button"
-                className="cancel-btn"
-                onClick={() => window.location.reload()}
-              >
-                Clear Form
-              </button>
-            </div>
-          </form>
-        </div>
+          {/* Submit Button */}
+          <button className="submit-btn" disabled={loading}>
+            {loading ? "Saving..." : id ? "Update Post" : "Create Post"}
+          </button>
+        </form>
       </div>
     </div>
   );
-}
+};
 
-export default CreatePost;
+export default Createpost;

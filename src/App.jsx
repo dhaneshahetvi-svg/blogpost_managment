@@ -2,10 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Createpost from "./pages/Createpost";
+import PostDetails from "./pages/PostDetails";
+import Analytics from "./pages/Analytics";
+import Editpost from "./pages/Editpost"; // ✅ ADD THIS
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Createpost from "./pages/Createpost";
 
 function App() {
   return (
@@ -16,24 +19,15 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-post" element={<Createpost />} />
-        <Route path="/edit-post/:" element={<Createpost/>}/>
-
-
-
+        <Route path="/post-detail/:id" element={<PostDetails />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/edit-post/:id" element={<Editpost />} />
       </Routes>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+
+      <ToastContainer position="top-right" autoClose={1000} theme="light" />
     </>
   );
 }
 
 export default App;
+  

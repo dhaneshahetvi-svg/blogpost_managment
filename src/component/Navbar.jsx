@@ -3,6 +3,7 @@ import {
   FaBlog,
   FaHome,
   FaPlusSquare,
+  FaChartBar,
   FaSignOutAlt,
 } from "react-icons/fa";
 import "./Navbar.css";
@@ -21,15 +22,18 @@ const Navbar = () => {
         <div className="navbar-links">
           <NavLink to="/dashboard" className="nav-item">
             <FaHome className="nav-icon" />
+            Dashboard
           </NavLink>
 
-          {/* CORRECT LINK */}
-          <NavLink
-            to="/create-post"
-            className="nav-item"
-          >
+          <NavLink to="/create-post" className="nav-item">
             <FaPlusSquare className="nav-icon" />
             Create Post
+          </NavLink>
+
+          {/* ✅ FIXED ANALYTICS LINK */}
+          <NavLink to="/analytics" className="nav-item">
+            <FaChartBar className="nav-icon" />
+            Analytics
           </NavLink>
         </div>
 
