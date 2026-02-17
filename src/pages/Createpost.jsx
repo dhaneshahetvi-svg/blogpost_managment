@@ -300,6 +300,7 @@ function CreatePost() {
       </div>
     </div>
   );
+  
 }
 
 export default CreatePost;
