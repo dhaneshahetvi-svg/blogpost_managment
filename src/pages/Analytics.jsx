@@ -54,7 +54,7 @@ const Analytics = () => {
 
   /*  ACTIONS */
   const handleEdit = (id) => {
-    navigate(`/create-post/${id}`);
+    navigate(`/edit-post/${id}`);
   };
 
   const handleDelete = async (id) => {

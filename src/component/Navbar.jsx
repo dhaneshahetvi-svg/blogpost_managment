@@ -1,16 +1,21 @@
+import React from "react";
+import { FaBlog, FaHome, FaMoon, FaPlusSquare, FaSignOutAlt, FaSun } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  FaBlog,
-  FaHome,
-  FaPlusSquare,
-  FaChartBar,
-  FaSignOutAlt,
-} from "react-icons/fa";
 import "./Navbar.css";
+import { MdAnalytics } from "react-icons/md";
+import { useTheme } from "../context/ThemeContext";
 
-const Navbar = () => {
-  const navigate = useNavigate();
 
+export default function Navbar() {
+  const data=JSON.parse(localStorage.getItem("blog_rdata"))
+  const navigate=useNavigate();
+  const {theme,toggleTheme}=useTheme();
+
+  const handleLogout =()=>{
+    localStorage.removeItem("data");
+    localStorage.removeItem("user");
+    navigate("/login")
+  }
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -18,11 +23,10 @@ const Navbar = () => {
           <FaBlog className="logo-icon" />
           <span className="logo-text">BlogPost</span>
         </div>
-
         <div className="navbar-links">
           <NavLink to="/dashboard" className="nav-item">
             <FaHome className="nav-icon" />
-            Dashboard
+            Home
           </NavLink>
 
           <NavLink to="/create-post" className="nav-item">
@@ -30,26 +34,29 @@ const Navbar = () => {
             Create Post
           </NavLink>
 
-          {/* ✅ FIXED ANALYTICS LINK */}
           <NavLink to="/analytics" className="nav-item">
-            <FaChartBar className="nav-icon" />
-            Analytics
+            <MdAnalytics className="nav-itoms"/>
+            Analitcs
           </NavLink>
+
+          
+
         </div>
-
         <div className="navbar-actions">
-          <span className="user-name">Hi, user</span>
+          <span className="user-name">Hi,{data?.name?.split(' ')[0]||'user'}</span>
 
-          <button
-            className="logout-btn"
-            onClick={() => navigate("/login")}
-          >
-            <FaSignOutAlt /> Logout
-          </button>
+          <button className="theme-toggle-btn" onClick={toggleTheme} arial-lable="Toggle theme">
+            {theme ==='light'?<FaMoon/> : <FaSun/>}
+            </button>
+            <button onClick={handleLogout} className="logout-btn">
+<FaSignOutAlt />
+            Logout
+            </button>
+
+            
+          
         </div>
       </div>
     </nav>
   );
 };
-
-export default Navbar;
