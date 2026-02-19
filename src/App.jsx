@@ -9,6 +9,7 @@ import Editpost from "./pages/Editpost"; //  ADD THIS
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Favorites from "./pages/Favorites";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/post-detail/:id" element={<PostDetails />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/edit-post/:id" element={<Editpost />} />
+        <Route path="/Favorites" element={<Favorites />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={1000} theme="light" />

@@ -32,12 +32,19 @@ export default function Navbar() {
           <NavLink to="/create-post" className="nav-item">
             <FaPlusSquare className="nav-icon" />
             Create Post
+
           </NavLink>
 
           <NavLink to="/analytics" className="nav-item">
             <MdAnalytics className="nav-itoms"/>
-            Analitcs
+            Analyitcs
           </NavLink>
+
+          <NavLink to="/Favorites" className="nav-item">
+            <MdAnalytics className="nav-itoms"/>
+            Favorites
+          </NavLink>
+
 
           
 
