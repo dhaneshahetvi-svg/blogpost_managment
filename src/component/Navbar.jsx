@@ -1,6 +1,6 @@
 import React from "react";
-import { FaBlog, FaHome, FaMoon, FaPlusSquare, FaSignOutAlt, FaSun } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { FaBlog, FaHome, FaMoon, FaPlusSquare, FaSignOutAlt, FaStar, FaSun } from "react-icons/fa";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { MdAnalytics } from "react-icons/md";
 import { useTheme } from "../context/ThemeContext";
@@ -40,9 +40,10 @@ export default function Navbar() {
             Analyitcs
           </NavLink>
 
-          <NavLink to="/Favorites" className="nav-item">
-            <MdAnalytics className="nav-itoms"/>
-            Favorites
+          <NavLink to="/Favorites" className="nav-item" onClick={() => Navigate("/favorites")}>
+          <FaStar className="nav-icon"/>Favorites
+           
+            
           </NavLink>
 
 
